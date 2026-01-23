@@ -1,51 +1,84 @@
 package com.javatest.crud;
 
 import lombok.Data;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@Data
 public class ChallengeService {
 
-    private Challenge challenge;
+    private ChallengeRepository challengeRepository;
 
-    public ChallengeService( Challenge challenge){
-        this.challenge = challenge;
+    public ChallengeService( ChallengeRepository challengeRepository){
+        this.challengeRepository = challengeRepository;
     }
+    private Long nextid;
 
-    private List<Challenge> challenges = new ArrayList<>();
-    private int nextid;
 
-    public ChallengeService(){
-    }
+//    public ChallengeService(){}
+
 
     public List<Challenge> getAllChallenges() {
-        return challenges;
+        return challengeRepository.findAll();
     }
 
     public Challenge getChallengeByMonth(String month){
-        for(Challenge challenge: challenges){
-            if(challenge.getMonth().equals(month)){
-                return challenge;
-            }
-        }
-        return null;
-    };
-
-    public boolean addAllChallenges(Challenge challenge){
-        if(challenge != null){
-        challenge.setId(nextid++);
-        challenges.add(challenge);
-        return true;
-        } else {
-            return false;
-        }
+        Optional<Challenge> challenge = challengeRepository.findByMonthIgnoreCase(month);
+        return challenge
+                .orElse(null);
     }
 
     public Challenge getChallenegByAge(int age) {
-        return challenge;
+        Optional<Challenge> challenge = challengeRepository.findByAge(age);
+        return challenge.orElse(null);
     }
+
+
+    public boolean addAllChallenges(Challenge challenge){
+        challengeRepository.save(challenge);
+        return true;
+        }
+
+
+    public boolean updateChallenge(Long id, Challenge updateChallenge) {
+       Optional<Challenge> challenge = challengeRepository.findById(id);
+       if(challenge.isPresent()) {
+           Challenge challengeToUpdate = challenge.get();
+           challengeToUpdate.setMonth(updateChallenge.getMonth());
+           challengeToUpdate.setAge(updateChallenge.getAge());
+           challengeToUpdate.setDescription(updateChallenge.getDescription());
+           challengeToUpdate.setId(updateChallenge.getId());
+           challengeRepository.save(challengeToUpdate);
+           return true;
+       }
+       return false;
+    }
+
+    public boolean deleteChallengeById(Long id) {
+        Optional<Challenge> challenge = challengeRepository.findById(id);
+        if(challenge.isPresent()){
+            challengeRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+
+
+
+
 }
+
+
+
+
+
+

@@ -1,13 +1,14 @@
 package com.javatest.crud;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/challenges")
 public class ChallengeController {
 
     private ChallengeService challengeService ;
@@ -16,44 +17,58 @@ public class ChallengeController {
         this.challengeService = challengeService;
     }
 
-    @GetMapping("/challenges")
+    @GetMapping
     public List<Challenge> getChallenges(){
         return challengeService.getAllChallenges();
     }
 
 
 
-    @GetMapping("/challenges/month")
-    public Challenge getChallengesbyMonth(String month){
+    @GetMapping("/{month}")
+    public ResponseEntity<Challenge> getChallengesbyMonth(@PathVariable  String month){
         Challenge challenge = challengeService.getChallengeByMonth(month);
         if(challenge != null){
-            return challenge;
+            return new ResponseEntity<>(challenge, HttpStatus.OK);
         }else {
-            return null;
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-//        return challengeService.getAllChallenges();
     }
 
-//    @GetMapping("/challenges")
-//    public List<Challenge> getChallengesbyAge(int age){
-//        Challenge challenge = challengeService.getChallenegByAge(age);
-//        if(challenge.getAge(age) > 21){
-//            return Challenge;
-//        }else {
-//            return null;
-//        }
-////        return challengeService.getAllChallenges();
-//    }
-
-    @PostMapping("/challenges")
-    public String addChallenges(@RequestBody Challenge challenge){
+    @PostMapping
+    public ResponseEntity<String> addChallenges(@RequestBody Challenge challenge){
        boolean challengeAdded = challengeService.addAllChallenges(challenge);
         if(challengeAdded){
-            return "Challenge added successfully!";
+            return new ResponseEntity<>("Challenge added successfully!", HttpStatus.OK);
         }else {
-            return "challenge not added successfully!!";
+            return new ResponseEntity<>("challenge not added successfully!!", HttpStatus.NOT_FOUND);
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateChallengeById(@PathVariable Long id,@RequestBody Challenge updateChallenge){
+
+        boolean isChallengeUpdated = challengeService.updateChallenge(id, updateChallenge);
+        if(isChallengeUpdated){
+            return new ResponseEntity<>("Challenge updated successfully!", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("challenge not updated successfully!!", HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteChallengeById(@PathVariable Long id){
+
+        boolean isChallengeDelete = challengeService.deleteChallengeById(id);
+        if(isChallengeDelete){
+            return new ResponseEntity<>("Challenge deleted successfully!", HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>("challenge not deleted successfully!!", HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
 
 
 
