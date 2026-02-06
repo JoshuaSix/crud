@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/challenges")
+@CrossOrigin(origins = "http://localhost:5173")
 public class ChallengeController {
 
     private ChallengeService challengeService ;
@@ -66,7 +67,6 @@ public class ChallengeController {
             return new ResponseEntity<>("challenge not deleted successfully!!", HttpStatus.NOT_FOUND);
         }
     }
-
 
 
 

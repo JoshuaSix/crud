@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 
 @Entity
-public class Challenge {
+public class  Challenge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     private Long id;
